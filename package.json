@@ -1,6 +1,6 @@
 {
   "name": "aistar-node",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Node.js library for the AiStar API",
   "repository": {
     "type": "git",

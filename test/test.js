@@ -16,4 +16,16 @@ openai.createChatCompletionSSE({
     res.message = (resp) => {
         console.log("resp = ", resp)
     }
+    res.error = (ev) => {
+        console.log("error", ev)
+    }
+    res.open = (ev) => {
+        console.log("open", ev)
+    }
+    res.end = (ev) => {
+        console.log("end", ev)
+    }
+    res.closed = (ev) => {
+        console.log("closed", ev)
+    }
 })

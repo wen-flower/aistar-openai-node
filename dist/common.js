@@ -169,15 +169,15 @@ const createSSEFunction = function (args, BASE_PATH, configuration) {
             // @ts-ignore
             headers: args.options.headers,
             method: args.options.method == "POST" ? "POST" : undefined,
-            body: args.options.data
+            body: args.options.data,
         });
         eventSource.addListener("open", event => {
             var _a;
-            (_a = sseEvent.open) === null || _a === void 0 ? void 0 : _a.call(sseEvent);
+            (_a = sseEvent.open) === null || _a === void 0 ? void 0 : _a.call(sseEvent, event);
         });
         eventSource.addListener("end", event => {
             var _a;
-            (_a = sseEvent.end) === null || _a === void 0 ? void 0 : _a.call(sseEvent);
+            (_a = sseEvent.end) === null || _a === void 0 ? void 0 : _a.call(sseEvent, event);
         });
         eventSource.addListener("message", event => {
             var _a;
@@ -185,11 +185,11 @@ const createSSEFunction = function (args, BASE_PATH, configuration) {
         });
         eventSource.addListener("error", (event) => {
             var _a;
-            (_a = sseEvent.error) === null || _a === void 0 ? void 0 : _a.call(sseEvent);
+            (_a = sseEvent.error) === null || _a === void 0 ? void 0 : _a.call(sseEvent, event);
         });
         eventSource.addListener("closed", (event) => {
             var _a;
-            (_a = sseEvent.closed) === null || _a === void 0 ? void 0 : _a.call(sseEvent);
+            (_a = sseEvent.closed) === null || _a === void 0 ? void 0 : _a.call(sseEvent, event);
         });
         return sseEvent;
     };

@@ -153,11 +153,11 @@ export const createRequestFunction = function (axiosArgs: RequestArgs, globalAxi
 }
 
 export type SSEEvent<T> = {
-    open?: () => void
-    end?: () => void
+    open?: (ev: Event) => void
+    end?: (ev: Event) => void
     message?: (data: T) => void
-    error?: () => void
-    closed?: () => void
+    error?: (ev: Event) => void
+    closed?: (ev: Event) => void
 }
 export const createSSEFunction = function (args: RequestArgs, BASE_PATH: string, configuration?: Configuration) {
     return <T>(basePath: string = BASE_PATH) => {
@@ -166,22 +166,22 @@ export const createSSEFunction = function (args: RequestArgs, BASE_PATH: string,
             // @ts-ignore
             headers: args.options.headers,
             method: args.options.method == "POST" ? "POST" : undefined,
-            body: args.options.data
+            body: args.options.data,
         });
         eventSource.addListener("open", event => {
-            sseEvent.open?.()
+            sseEvent.open?.(event)
         })
         eventSource.addListener("end", event => {
-            sseEvent.end?.()
+            sseEvent.end?.(event)
         })
         eventSource.addListener("message", event => {
             sseEvent.message?.(event.data)
         })
         eventSource.addListener("error", (event) => {
-            sseEvent.error?.()
+            sseEvent.error?.(event)
         })
         eventSource.addListener("closed", (event) => {
-            sseEvent.closed?.()
+            sseEvent.closed?.(event)
         })
 
         return sseEvent

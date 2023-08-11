@@ -18,7 +18,19 @@ import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from './common';
+import {
+    DUMMY_BASE_URL,
+    assertParamExists,
+    setApiKeyToObject,
+    setBasicAuthToObject,
+    setBearerAuthToObject,
+    setOAuthToObject,
+    setSearchParams,
+    serializeDataIfNeeded,
+    toPathString,
+    createRequestFunction,
+    createSSEFunction, SSEEvent
+} from './common';
 import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
@@ -2099,6 +2111,42 @@ export const OpenAIApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
+         *
+         * @summary Creates a model response for the given chat conversation.
+         * @param {CreateChatCompletionRequest} createChatCompletionRequest
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createChatCompletionSSE: async (createChatCompletionRequest: CreateChatCompletionRequest): Promise<RequestArgs> => {
+            // verify required parameter 'createChatCompletionRequest' is not null or undefined
+            assertParamExists('createChatCompletionSSE', 'createChatCompletionRequest', createChatCompletionRequest)
+            const localVarPath = `/chat/completions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions};
+            localVarRequestOptions.data = serializeDataIfNeeded(createChatCompletionRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary Classifies the specified `query` using provided examples.  The endpoint first [searches](/docs/api-reference/searches) over the labeled examples to select the ones most relevant for the particular query. Then, the relevant examples are combined with the query to construct a prompt to produce the final label via the [completions](/docs/api-reference/completions) endpoint.  Labeled examples can be provided via an uploaded `file`, or explicitly listed in the request using the `examples` parameter for quick tests and small scale use cases. 
          * @param {CreateClassificationRequest} createClassificationRequest 
@@ -3149,6 +3197,17 @@ export const OpenAIApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         *
+         * @summary Creates a model response for the given chat conversation.
+         * @param {CreateChatCompletionRequest} createChatCompletionRequest
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createChatCompletionSSE(createChatCompletionRequest: CreateChatCompletionRequest): Promise<(basePath?: string) => SSEEvent<CreateChatCompletionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createChatCompletion(createChatCompletionRequest);
+            return createSSEFunction(localVarAxiosArgs, BASE_PATH, configuration);
+        },
+        /**
          * 
          * @summary Classifies the specified `query` using provided examples.  The endpoint first [searches](/docs/api-reference/searches) over the labeled examples to select the ones most relevant for the particular query. Then, the relevant examples are combined with the query to construct a prompt to produce the final label via the [completions](/docs/api-reference/completions) endpoint.  Labeled examples can be provided via an uploaded `file`, or explicitly listed in the request using the `examples` parameter for quick tests and small scale use cases. 
          * @param {CreateClassificationRequest} createClassificationRequest 
@@ -3803,6 +3862,18 @@ export class OpenAIApi extends BaseAPI {
      */
     public createChatCompletion(createChatCompletionRequest: CreateChatCompletionRequest, options?: AxiosRequestConfig) {
         return OpenAIApiFp(this.configuration).createChatCompletion(createChatCompletionRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     *
+     * @summary Creates a model response for the given chat conversation.
+     * @param {CreateChatCompletionRequest} createChatCompletionRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OpenAIApi
+     */
+    public createChatCompletionSSE(createChatCompletionRequest: CreateChatCompletionRequest) {
+        return OpenAIApiFp(this.configuration).createChatCompletionSSE(createChatCompletionRequest).then(request => request(this.basePath));
     }
 
     /**

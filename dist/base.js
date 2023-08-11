@@ -12,10 +12,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RequiredError = exports.BaseAPI = exports.COLLECTION_FORMATS = exports.BASE_PATH = void 0;
-const axios_1 = require("axios");
-exports.BASE_PATH = "https://api.openai.com/v1".replace(/\/+$/, "");
+const axios_1 = __importDefault(require("axios"));
+exports.BASE_PATH = "http://localhost:8080/v1".replace(/\/+$/, "");
+// export const BASE_PATH = "https://chat.aistar.ink/api/v1".replace(/\/+$/, "");
+// export const BASE_PATH = "https://api.openai.com/v1".replace(/\/+$/, "");
 /**
  *
  * @export

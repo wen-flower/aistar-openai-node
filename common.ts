@@ -17,6 +17,9 @@ import type { Configuration } from "./configuration";
 import type { RequestArgs } from "./base";
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import { RequiredError } from "./base";
+import EventSource from "./eventsource"
+
+import axios from "axios";
 
 /**
  *
@@ -147,4 +150,40 @@ export const createRequestFunction = function (axiosArgs: RequestArgs, globalAxi
         const axiosRequestArgs = {...axiosArgs.options, url: (configuration?.basePath || basePath) + axiosArgs.url};
         return axios.request<T, R>(axiosRequestArgs);
     };
+}
+
+export type SSEEvent<T> = {
+    open?: () => void
+    end?: () => void
+    message?: (data: T) => void
+    error?: () => void
+    closed?: () => void
+}
+export const createSSEFunction = function (args: RequestArgs, BASE_PATH: string, configuration?: Configuration) {
+    return <T>(basePath: string = BASE_PATH) => {
+        const sseEvent: SSEEvent<T> = {}
+        const eventSource = new EventSource((configuration?.basePath || basePath) + args.url, {
+            // @ts-ignore
+            headers: args.options.headers,
+            method: args.options.method == "POST" ? "POST" : undefined,
+            body: args.options.data
+        });
+        eventSource.addListener("open", event => {
+            sseEvent.open?.()
+        })
+        eventSource.addListener("end", event => {
+            sseEvent.end?.()
+        })
+        eventSource.addListener("message", event => {
+            sseEvent.message?.(event.data)
+        })
+        eventSource.addListener("error", (event) => {
+            sseEvent.error?.()
+        })
+        eventSource.addListener("closed", (event) => {
+            sseEvent.closed?.()
+        })
+
+        return sseEvent
+    }
 }

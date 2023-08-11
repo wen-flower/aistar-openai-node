@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
-  - name: OpenAI support
-    url: https://help.openai.com/
+  - name: AiStar support
+    url: https://aistar.ink/
     about: |
-      Please only file issues here that you believe represent actual bugs or feature requests for the OpenAI Node library.
-      If you're having general trouble with the OpenAI API, please visit our help center to get support.
+      Please only file issues here that you believe represent actual bugs or feature requests for the AiStar OpenAI Node library.
+      If you're having general trouble with the AiOpenAI API, please visit our help center to get support.

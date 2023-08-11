@@ -63,3 +63,11 @@ export declare const toPathString: (url: URL) => string;
  * @export
  */
 export declare const createRequestFunction: (axiosArgs: RequestArgs, globalAxios: AxiosInstance, BASE_PATH: string, configuration?: Configuration) => <T = unknown, R = AxiosResponse<T, any>>(axios?: AxiosInstance, basePath?: string) => Promise<R>;
+export type SSEEvent<T> = {
+    open?: () => void;
+    end?: () => void;
+    message?: (data: T) => void;
+    error?: () => void;
+    closed?: () => void;
+};
+export declare const createSSEFunction: (args: RequestArgs, BASE_PATH: string, configuration?: Configuration) => <T>(basePath?: string) => SSEEvent<T>;

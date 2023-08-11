@@ -21,9 +21,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRequestFunction = exports.toPathString = exports.serializeDataIfNeeded = exports.setSearchParams = exports.setOAuthToObject = exports.setBearerAuthToObject = exports.setBasicAuthToObject = exports.setApiKeyToObject = exports.assertParamExists = exports.DUMMY_BASE_URL = void 0;
+exports.createSSEFunction = exports.createRequestFunction = exports.toPathString = exports.serializeDataIfNeeded = exports.setSearchParams = exports.setOAuthToObject = exports.setBearerAuthToObject = exports.setBasicAuthToObject = exports.setApiKeyToObject = exports.assertParamExists = exports.DUMMY_BASE_URL = void 0;
 const base_1 = require("./base");
+const eventsource_1 = __importDefault(require("./eventsource"));
 /**
  *
  * @export
@@ -34,16 +38,17 @@ exports.DUMMY_BASE_URL = 'https://example.com';
  * @throws {RequiredError}
  * @export
  */
-exports.assertParamExists = function (functionName, paramName, paramValue) {
+const assertParamExists = function (functionName, paramName, paramValue) {
     if (paramValue === null || paramValue === undefined) {
         throw new base_1.RequiredError(paramName, `Required parameter ${paramName} was null or undefined when calling ${functionName}.`);
     }
 };
+exports.assertParamExists = assertParamExists;
 /**
  *
  * @export
  */
-exports.setApiKeyToObject = function (object, keyParamName, configuration) {
+const setApiKeyToObject = function (object, keyParamName, configuration) {
     return __awaiter(this, void 0, void 0, function* () {
         if (configuration && configuration.apiKey) {
             const localVarApiKeyValue = typeof configuration.apiKey === 'function'
@@ -53,20 +58,22 @@ exports.setApiKeyToObject = function (object, keyParamName, configuration) {
         }
     });
 };
+exports.setApiKeyToObject = setApiKeyToObject;
 /**
  *
  * @export
  */
-exports.setBasicAuthToObject = function (object, configuration) {
+const setBasicAuthToObject = function (object, configuration) {
     if (configuration && (configuration.username || configuration.password)) {
         object["auth"] = { username: configuration.username, password: configuration.password };
     }
 };
+exports.setBasicAuthToObject = setBasicAuthToObject;
 /**
  *
  * @export
  */
-exports.setBearerAuthToObject = function (object, configuration) {
+const setBearerAuthToObject = function (object, configuration) {
     return __awaiter(this, void 0, void 0, function* () {
         if (configuration && configuration.accessToken) {
             const accessToken = typeof configuration.accessToken === 'function'
@@ -76,11 +83,12 @@ exports.setBearerAuthToObject = function (object, configuration) {
         }
     });
 };
+exports.setBearerAuthToObject = setBearerAuthToObject;
 /**
  *
  * @export
  */
-exports.setOAuthToObject = function (object, name, scopes, configuration) {
+const setOAuthToObject = function (object, name, scopes, configuration) {
     return __awaiter(this, void 0, void 0, function* () {
         if (configuration && configuration.accessToken) {
             const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
@@ -90,6 +98,7 @@ exports.setOAuthToObject = function (object, name, scopes, configuration) {
         }
     });
 };
+exports.setOAuthToObject = setOAuthToObject;
 function setFlattenedQueryParams(urlSearchParams, parameter, key = "") {
     if (parameter == null)
         return;
@@ -114,16 +123,17 @@ function setFlattenedQueryParams(urlSearchParams, parameter, key = "") {
  *
  * @export
  */
-exports.setSearchParams = function (url, ...objects) {
+const setSearchParams = function (url, ...objects) {
     const searchParams = new URLSearchParams(url.search);
     setFlattenedQueryParams(searchParams, objects);
     url.search = searchParams.toString();
 };
+exports.setSearchParams = setSearchParams;
 /**
  *
  * @export
  */
-exports.serializeDataIfNeeded = function (value, requestOptions, configuration) {
+const serializeDataIfNeeded = function (value, requestOptions, configuration) {
     const nonString = typeof value !== 'string';
     const needsSerialization = nonString && configuration && configuration.isJsonMime
         ? configuration.isJsonMime(requestOptions.headers['Content-Type'])
@@ -132,20 +142,56 @@ exports.serializeDataIfNeeded = function (value, requestOptions, configuration) 
         ? JSON.stringify(value !== undefined ? value : {})
         : (value || "");
 };
+exports.serializeDataIfNeeded = serializeDataIfNeeded;
 /**
  *
  * @export
  */
-exports.toPathString = function (url) {
+const toPathString = function (url) {
     return url.pathname + url.search + url.hash;
 };
+exports.toPathString = toPathString;
 /**
  *
  * @export
  */
-exports.createRequestFunction = function (axiosArgs, globalAxios, BASE_PATH, configuration) {
+const createRequestFunction = function (axiosArgs, globalAxios, BASE_PATH, configuration) {
     return (axios = globalAxios, basePath = BASE_PATH) => {
         const axiosRequestArgs = Object.assign(Object.assign({}, axiosArgs.options), { url: ((configuration === null || configuration === void 0 ? void 0 : configuration.basePath) || basePath) + axiosArgs.url });
         return axios.request(axiosRequestArgs);
     };
 };
+exports.createRequestFunction = createRequestFunction;
+const createSSEFunction = function (args, BASE_PATH, configuration) {
+    return (basePath = BASE_PATH) => {
+        const sseEvent = {};
+        const eventSource = new eventsource_1.default(((configuration === null || configuration === void 0 ? void 0 : configuration.basePath) || basePath) + args.url, {
+            // @ts-ignore
+            headers: args.options.headers,
+            method: args.options.method == "POST" ? "POST" : undefined,
+            body: args.options.data
+        });
+        eventSource.addListener("open", event => {
+            var _a;
+            (_a = sseEvent.open) === null || _a === void 0 ? void 0 : _a.call(sseEvent);
+        });
+        eventSource.addListener("end", event => {
+            var _a;
+            (_a = sseEvent.end) === null || _a === void 0 ? void 0 : _a.call(sseEvent);
+        });
+        eventSource.addListener("message", event => {
+            var _a;
+            (_a = sseEvent.message) === null || _a === void 0 ? void 0 : _a.call(sseEvent, event.data);
+        });
+        eventSource.addListener("error", (event) => {
+            var _a;
+            (_a = sseEvent.error) === null || _a === void 0 ? void 0 : _a.call(sseEvent);
+        });
+        eventSource.addListener("closed", (event) => {
+            var _a;
+            (_a = sseEvent.closed) === null || _a === void 0 ? void 0 : _a.call(sseEvent);
+        });
+        return sseEvent;
+    };
+};
+exports.createSSEFunction = createSSEFunction;

@@ -1,31 +1,37 @@
 {
-  "name": "openai",
+  "name": "aistar-node",
   "version": "3.3.0",
-  "description": "Node.js library for the OpenAI API",
+  "description": "Node.js library for the AiStar API",
   "repository": {
     "type": "git",
-    "url": "git@github.com:openai/openai-node.git"
+    "url": "git@github.com:wen-flower/aistar-openai-node.git"
   },
   "keywords": [
+    "aistar",
     "openai",
     "open",
     "ai",
     "gpt-3",
     "gpt3"
   ],
-  "author": "OpenAI",
+  "files": [
+    "dist"
+  ],
+  "author": "WenFlower",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc --outDir dist/"
+    "build": "tsc --outDir dist/",
+    "test": "npm run build & node test/test.js"
   },
   "dependencies": {
     "axios": "^0.26.0",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "launchdarkly-eventsource": "^2.0.0"
   },
   "devDependencies": {
-    "@types/node": "^12.11.5",
-    "typescript": "^3.6.4"
+    "@types/node": "^18.16.0",
+    "typescript": "^4.9.5"
   }
 }

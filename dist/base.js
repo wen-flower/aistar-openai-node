@@ -18,8 +18,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RequiredError = exports.BaseAPI = exports.COLLECTION_FORMATS = exports.BASE_PATH = void 0;
 const axios_1 = __importDefault(require("axios"));
-exports.BASE_PATH = "http://localhost:8080/v1".replace(/\/+$/, "");
-// export const BASE_PATH = "https://chat.aistar.ink/api/v1".replace(/\/+$/, "");
+// export const BASE_PATH = "http://localhost:8080/v1".replace(/\/+$/, "");
+exports.BASE_PATH = "https://chat.aistar.ink/api/v1".replace(/\/+$/, "");
 // export const BASE_PATH = "https://api.openai.com/v1".replace(/\/+$/, "");
 /**
  *
